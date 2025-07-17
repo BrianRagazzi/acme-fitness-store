@@ -1,9 +1,0 @@
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: "http://example.com"
-  cloud:
-    config:
-      enabled: false
