@@ -39,6 +39,18 @@ The sample can be deployed to Azure Spring Apps Enterprise or Tanzu Platform.
 ### Tanzu Platform for Cloud Foundry (tPCF aka TAS)
 
 Assumption that the proper Cloud Foundry CLI has been installed.
+Install the following Tiles in the tPCF foundation:
+* CF (Small footprint is fine)
+* Tanzu Valkey on CF (aka redis)
+* GenAI on Tanzu
+* - Add models and plans for chat, tools and embedding
+* Tanzu Postgres on CF
+* - Add ON-demand Plan
+* Spring Cloud Services
+* Spring Cloud Gateway
+* Single Sign On
+* - Enable System Plan for All Orgs
+
 
 #### Create Services
 
@@ -50,11 +62,16 @@ cf create-service postgres on-demand-postgres-db acme-order-postgres
 
 # This sets up your TAS/tPCF config server. It assumes that your config files are located at <this-repository-url> in the branch config (label) under the directory config (searchPaths). You can checkout the branch to see the structure if you like.
 cf create-service p.config-server standard acme-config  -c  '{ "git": { "uri": "<this-repository-url>", "label": "config", "searchPaths": "config" } }'
+cf create-service p.config-server standard acme-config  -c  '{ "git": { "uri": "https://github.com/BrianRagazzi/acme-fitness-store", "label": "config", "searchPaths": "config" } }'
+
+
 
 # This assumes Tanzu Single Sign on for TAS/tPCF is installed and configured against UAA.  You can also use other identity providers if you change the plan and binding below.
 cf create-service p-identity uaa acme-sso   
 cf create-service p.service-registry standard acme-registry  
 cf create-service p.gateway standard acme-gateway -c '{"sso": { "plan": "uaa", "scopes": ["openid", "profile", "email"] }, "host": "acme-fitness" ,"cors": { "allowed-origins": [ "*" ] }}'
+
+
 
 # This assumes you have a Chat and Embedding model plan configured with GenAI for Tanzu Platform v0.6+
 cf create-service genai <CHAT MODEL PLAN> acme-genai-chat
@@ -74,6 +91,14 @@ cf bind-service acme-identity acme-sso -c '{  "grant_types": ["authorization_cod
     "scopes": ["openid"],
     "authorities": ["openid"],
     "redirect_uris": ["https://acme-fitness.[YOUR APPS DOMAIN]/"],
+    "auto_approved_scopes": ["openid"],
+    "identity_providers": ["uaa"],
+    "show_on_home_page": false}'
+
+cf bind-service acme-identity acme-sso -c '{  "grant_types": ["authorization_code"],
+    "scopes": ["openid"],
+    "authorities": ["openid"],
+    "redirect_uris": ["https://acme-fitness.apps.tpcf.lab.brianragazzi.com/"],
     "auto_approved_scopes": ["openid"],
     "identity_providers": ["uaa"],
     "show_on_home_page": false}'
