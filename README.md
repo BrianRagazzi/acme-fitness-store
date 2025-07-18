@@ -41,6 +41,7 @@ The sample can be deployed to Azure Spring Apps Enterprise or Tanzu Platform.
 Assumption that the proper Cloud Foundry CLI has been installed.
 Install the following Tiles in the tPCF foundation:
 * CF (Small footprint is fine)
+* - Check "Allow Space Developers to manage network policies" is checked on the App Developer Controls configuration page
 * Tanzu Valkey on CF (aka redis)
 * GenAI on Tanzu
 * - Add models and plans for chat, tools and embedding
@@ -133,7 +134,7 @@ cf start acme-payment
 cd ../acme-catalog
 ./gradlew clean assemble
 cf push --no-start
-cf bind-service acme-catalog acme-gateway -c catalog-routes.json
+cf bind-service acme-catalog acme-gateway -c catalog-service_rate-limit.json
 cf start acme-catalog
 ```
 
@@ -145,7 +146,7 @@ cd ../acme-assist
 
 # Use this with GenAI 0.6+
 cf push --no-start 
-cf add-network-policy acme-assist acme-catalog (Fails)
+cf add-network-policy acme-assist acme-catalog (make sure SpaceDevs can manage network policies)
 cf bind-service acme-assist acme-gateway -c assist-routes.json
 cf start acme-assist (Fails with model error)
 ```
@@ -156,7 +157,7 @@ cf start acme-assist (Fails with model error)
 cd ../acme-order
 dotnet publish -r linux-x64
 cf push --no-start
-cf add-network-policy acme-order acme-payment (Fails)
+cf add-network-policy acme-order acme-payment
 cf bind-service acme-order acme-gateway -c order-routes.json
 cf start acme-order 
 ```
