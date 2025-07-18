@@ -133,7 +133,7 @@ cf start acme-payment
 cd ../acme-catalog
 ./gradlew clean assemble
 cf push --no-start
-cf bind-service acme-catalog acme-gateway -c catalog-service_rate-limit.json
+cf bind-service acme-catalog acme-gateway -c catalog-routes.json
 cf start acme-catalog
 ```
 
@@ -145,9 +145,9 @@ cd ../acme-assist
 
 # Use this with GenAI 0.6+
 cf push --no-start 
-cf add-network-policy acme-assist acme-catalog
+cf add-network-policy acme-assist acme-catalog (Fails)
 cf bind-service acme-assist acme-gateway -c assist-routes.json
-cf start acme-assist
+cf start acme-assist (Fails with model error)
 ```
 
 #### Order Service
@@ -156,9 +156,9 @@ cf start acme-assist
 cd ../acme-order
 dotnet publish -r linux-x64
 cf push --no-start
-cf add-network-policy acme-order acme-payment
+cf add-network-policy acme-order acme-payment (Fails)
 cf bind-service acme-order acme-gateway -c order-routes.json
-cf start acme-order
+cf start acme-order 
 ```
 
 #### Shopping Service
