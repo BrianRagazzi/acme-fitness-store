@@ -148,7 +148,7 @@ cd ../acme-assist
 cf push --no-start 
 cf add-network-policy acme-assist acme-catalog (make sure SpaceDevs can manage network policies)
 cf bind-service acme-assist acme-gateway -c assist-routes.json
-cf start acme-assist (Fails with model error)
+cf start acme-assist 
 ```
 
 #### Order Service
